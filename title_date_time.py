@@ -18,21 +18,17 @@ def update_title_bar(args):
 
     # Get current file path (Unicode in Python 2.7)
     file_path = notepad.getCurrentFilename()
-    # Convert to Unicode (it may already be, but ensure it)
     if not isinstance(file_path, unicode):
         file_path = file_path.decode('utf-8')
     file_name = os.path.basename(file_path)
 
     if os.path.isfile(file_path):
         mod_time = os.path.getmtime(file_path)
-        # time_str is ASCII, no problem
         time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(mod_time))
-        # Build Unicode title
         new_title = u"{} - {} - Notepad++".format(file_name, time_str)
     else:
         new_title = u"{} - Unsaved - Notepad++".format(file_name)
 
-    # Set window title using Unicode API (SetWindowTextW expects wchar_t*)
     user32 = ctypes.windll.user32
     user32.SetWindowTextW(hwnd, new_title)
 
@@ -46,3 +42,6 @@ except NameError:
     console.write("Title bar update script is now active (Unicode safe)!\n")
 else:
     console.write("Title bar update script is already running.\n")
+
+# --- Immediately update the title bar for the current file ---
+update_title_bar(None)
